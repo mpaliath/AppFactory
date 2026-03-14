@@ -28,7 +28,12 @@ jobs:
           BUILD_NUMBER="$(date -u +%Y%m%d%H%M%S)"
           INFO_PLIST="HelloWorldiOS/HelloWorldiOS/Info.plist"
 
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$INFO_PLIST"
+          if /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST" >/dev/null 2>&1; then
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$INFO_PLIST"
+          else
+            /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $BUILD_NUMBER" "$INFO_PLIST"
+          fi
+
           CURRENT_BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST")
 
           if [ "$CURRENT_BUILD_NUMBER" != "$BUILD_NUMBER" ]; then
