@@ -19,7 +19,7 @@ jobs:
       IOS_SCHEME: HelloWorldiOS
       IOS_CONFIGURATION: Release
       BUNDLE_ID: com.appfactory.HelloWorldiOS
-      APPLE_TEAM_ID: U4J6FD52VY
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
 
     steps:
