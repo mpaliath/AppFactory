@@ -70,7 +70,12 @@ The workflow builds with:
 
 If these change in the app project, update `.github/workflows/deploy-testflight.yml` accordingly.
 
-## 6) Ensure signing settings match CI export mode
+
+## 6) Xcode version selection
+
+The workflow uses `maxim-lobanov/setup-xcode@v4` with `xcode-version: latest-stable`, so CI automatically picks the latest stable Xcode available on GitHub-hosted macOS runners.
+
+## 7) Ensure signing settings match CI export mode
 
 The workflow exports with `method = app-store` and `signingStyle = manual`.
 
@@ -79,7 +84,7 @@ Make sure:
 - The certificate/provisioning profile match the app bundle identifier.
 - The Xcode project supports manual signing for release/archive as configured.
 
-## 7) Test the pipeline
+## 8) Test the pipeline
 
 1. Open a pull request with your changes.
 2. Merge the pull request.
@@ -90,7 +95,7 @@ Make sure:
    - IPA export
    - upload to TestFlight
 
-## 8) Troubleshooting
+## 9) Troubleshooting
 
 - **Signing errors**: Recreate/export certificate and profile, re-encode, and update secrets.
 - **API auth errors**: Re-check `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, and `.p8` key content.

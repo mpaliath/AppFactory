@@ -17,7 +17,7 @@ jobs:
       - name: Setup Xcode Environment
         uses: maxim-lobanov/setup-xcode@v4
         with:
-          xcode-version: '14.3.1'
+          xcode-version: latest-stable
 
       - name: Install Certificates and Provisioning Profile
         env:
