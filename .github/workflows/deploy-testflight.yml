@@ -5,6 +5,10 @@ on:
     types:
       - closed
 
+concurrency:
+  group: testflight-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy_to_testflight:
     if: github.event.pull_request.merged == true
@@ -18,6 +22,30 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v4
         with:
           xcode-version: latest-stable
+
+      - name: Generate and apply unique build number
+        run: |
+          BUILD_NUMBER="$(date -u +%Y%m%d%H%M%S)"
+          INFO_PLIST="HelloWorldiOS/HelloWorldiOS/Info.plist"
+
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$INFO_PLIST"
+          CURRENT_BUILD_NUMBER=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST")
+
+          if [ "$CURRENT_BUILD_NUMBER" != "$BUILD_NUMBER" ]; then
+            echo "Failed to set CFBundleVersion. Expected $BUILD_NUMBER, got $CURRENT_BUILD_NUMBER"
+            exit 1
+          fi
+
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> "$GITHUB_ENV"
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "Using CFBundleVersion: $BUILD_NUMBER"
+
+      - name: Log deployment context
+        run: |
+          echo "Deploying PR #${{ github.event.pull_request.number }}"
+          echo "Merged by: ${{ github.event.pull_request.merged_by.login }}"
+          echo "Commit SHA: ${{ github.event.pull_request.merge_commit_sha }}"
+          echo "Build number: $BUILD_NUMBER"
 
       - name: Install Certificates and Provisioning Profile
         env:
@@ -98,3 +126,15 @@ jobs:
             --file "$RUNNER_TEMP/HelloWorldiOS.ipa" \
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+
+      - name: Publish deployment summary
+        run: |
+          {
+            echo "## TestFlight Deployment Summary"
+            echo "- PR: #${{ github.event.pull_request.number }}"
+            echo "- Source branch: ${{ github.event.pull_request.head.ref }}"
+            echo "- Target branch: ${{ github.event.pull_request.base.ref }}"
+            echo "- Merge commit: ${{ github.event.pull_request.merge_commit_sha }}"
+            echo "- Build number (CFBundleVersion): $BUILD_NUMBER"
+            echo "- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } >> "$GITHUB_STEP_SUMMARY"
