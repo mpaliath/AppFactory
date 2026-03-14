@@ -1,0 +1,39 @@
+name: iOS Pre-Merge Validation
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  validate_ios_archive:
+    if: github.event.pull_request.draft == false
+    runs-on: macos-latest
+    env:
+      IOS_PROJECT_PATH: HelloWorldiOS/HelloWorldiOS.xcodeproj
+      IOS_SCHEME: HelloWorldiOS
+      IOS_CONFIGURATION: Release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Xcode Environment
+        uses: maxim-lobanov/setup-xcode@v1.6.0
+        with:
+          xcode-version: latest-stable
+
+      - name: Build unsigned iOS archive (validation)
+        run: |
+          xcodebuild \
+            -project "$IOS_PROJECT_PATH" \
+            -scheme "$IOS_SCHEME" \
+            -sdk iphoneos \
+            -configuration "$IOS_CONFIGURATION" \
+            -archivePath "$RUNNER_TEMP/HelloWorldiOS-validate.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            archive

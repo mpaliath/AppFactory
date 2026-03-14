@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - closed
+  workflow_dispatch:
 
 concurrency:
   group: testflight-deploy
@@ -11,8 +12,15 @@ concurrency:
 
 jobs:
   deploy_to_testflight:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: macos-latest
+    env:
+      IOS_PROJECT_PATH: HelloWorldiOS/HelloWorldiOS.xcodeproj
+      IOS_SCHEME: HelloWorldiOS
+      IOS_CONFIGURATION: Release
+      BUNDLE_ID: com.appfactory.HelloWorldiOS
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
 
     steps:
       - name: Checkout code
@@ -47,10 +55,20 @@ jobs:
 
       - name: Log deployment context
         run: |
-          echo "Deploying PR #${{ github.event.pull_request.number }}"
-          echo "Merged by: ${{ github.event.pull_request.merged_by.login }}"
-          echo "Commit SHA: ${{ github.event.pull_request.merge_commit_sha }}"
           echo "Build number: $BUILD_NUMBER"
+          echo "Bundle ID: $BUNDLE_ID"
+          echo "Team ID: $APPLE_TEAM_ID"
+          echo "Provisioning profile specifier present: $([ -n \"$PROVISIONING_PROFILE_SPECIFIER\" ] && echo yes || echo no)"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Deploying PR #${{ github.event.pull_request.number }}"
+            echo "Merged by: ${{ github.event.pull_request.merged_by.login }}"
+            echo "Commit SHA: ${{ github.event.pull_request.merge_commit_sha }}"
+          fi
+
+      - name: Validate signing inputs
+        run: |
+          test -n "$APPLE_TEAM_ID" || { echo "Missing APPLE_TEAM_ID value"; exit 1; }
+          test -n "$PROVISIONING_PROFILE_SPECIFIER" || { echo "Missing IOS_PROVISIONING_PROFILE_SPECIFIER secret"; exit 1; }
 
       - name: Install Certificates and Provisioning Profile
         env:
@@ -75,19 +93,23 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Build iOS App
+      - name: Build iOS App Archive
         run: |
           xcodebuild \
-            -project HelloWorldiOS/HelloWorldiOS.xcodeproj \
-            -scheme HelloWorldiOS \
+            -project "$IOS_PROJECT_PATH" \
+            -scheme "$IOS_SCHEME" \
             -sdk iphoneos \
-            -configuration Release \
+            -configuration "$IOS_CONFIGURATION" \
             -archivePath "$RUNNER_TEMP/HelloWorldiOS.xcarchive" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_SPECIFIER" \
             archive
 
       - name: Create export options
         run: |
-          cat > "$RUNNER_TEMP/ExportOptions.plist" <<'PLIST'
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -96,6 +118,13 @@ jobs:
             <string>app-store</string>
             <key>signingStyle</key>
             <string>manual</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${BUNDLE_ID}</key>
+              <string>${PROVISIONING_PROFILE_SPECIFIER}</string>
+            </dict>
             <key>stripSwiftSymbols</key>
             <true/>
             <key>uploadSymbols</key>
@@ -136,10 +165,14 @@ jobs:
         run: |
           {
             echo "## TestFlight Deployment Summary"
-            echo "- PR: #${{ github.event.pull_request.number }}"
-            echo "- Source branch: ${{ github.event.pull_request.head.ref }}"
-            echo "- Target branch: ${{ github.event.pull_request.base.ref }}"
-            echo "- Merge commit: ${{ github.event.pull_request.merge_commit_sha }}"
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "- PR: #${{ github.event.pull_request.number }}"
+              echo "- Source branch: ${{ github.event.pull_request.head.ref }}"
+              echo "- Target branch: ${{ github.event.pull_request.base.ref }}"
+              echo "- Merge commit: ${{ github.event.pull_request.merge_commit_sha }}"
+            fi
+            echo "- Bundle ID: $BUNDLE_ID"
+            echo "- Team ID: $APPLE_TEAM_ID"
             echo "- Build number (CFBundleVersion): $BUILD_NUMBER"
             echo "- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           } >> "$GITHUB_STEP_SUMMARY"
