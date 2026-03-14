@@ -19,7 +19,7 @@ jobs:
       IOS_SCHEME: HelloWorldiOS
       IOS_CONFIGURATION: Release
       BUNDLE_ID: com.appfactory.HelloWorldiOS
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_TEAM_ID: U4J6FD52VY
       PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
 
     steps:
@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "Build number: $BUILD_NUMBER"
           echo "Bundle ID: $BUNDLE_ID"
-          echo "Team ID present: $([ -n \"$APPLE_TEAM_ID\" ] && echo yes || echo no)"
+          echo "Team ID: $APPLE_TEAM_ID"
           echo "Provisioning profile specifier present: $([ -n \"$PROVISIONING_PROFILE_SPECIFIER\" ] && echo yes || echo no)"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Deploying PR #${{ github.event.pull_request.number }}"
@@ -65,9 +65,9 @@ jobs:
             echo "Commit SHA: ${{ github.event.pull_request.merge_commit_sha }}"
           fi
 
-      - name: Validate signing secrets
+      - name: Validate signing inputs
         run: |
-          test -n "$APPLE_TEAM_ID" || { echo "Missing APPLE_TEAM_ID secret"; exit 1; }
+          test -n "$APPLE_TEAM_ID" || { echo "Missing APPLE_TEAM_ID value"; exit 1; }
           test -n "$PROVISIONING_PROFILE_SPECIFIER" || { echo "Missing IOS_PROVISIONING_PROFILE_SPECIFIER secret"; exit 1; }
 
       - name: Install Certificates and Provisioning Profile
@@ -172,6 +172,7 @@ jobs:
               echo "- Merge commit: ${{ github.event.pull_request.merge_commit_sha }}"
             fi
             echo "- Bundle ID: $BUNDLE_ID"
+            echo "- Team ID: $APPLE_TEAM_ID"
             echo "- Build number (CFBundleVersion): $BUILD_NUMBER"
             echo "- Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           } >> "$GITHUB_STEP_SUMMARY"
