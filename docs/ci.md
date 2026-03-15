@@ -1,136 +1,72 @@
 # CI/CD: Deploy iOS App to TestFlight
 
-This repository includes a GitHub Actions workflow at `.github/workflows/deploy-testflight.yml` that uploads the iOS app to TestFlight when a pull request is **merged**.
+This repository uses `.github/workflows/deploy-testflight.yml` to archive the iOS app and upload it to TestFlight after a pull request is merged.
 
-## 1) Confirm workflow trigger behavior
+## What changed
+
+The workflow now uses the simplest current setup:
+
+- Xcode automatic signing
+- App Store Connect API key authentication
+- GitHub Actions on `macos-latest`
+
+It no longer installs a `.p12` certificate, creates a temporary keychain, or copies a `.mobileprovision` profile into the runner.
+
+## Trigger behavior
 
 The workflow runs on:
+
 - `pull_request` with type `closed`
-- and only continues when `github.event.pull_request.merged == true`
+- `workflow_dispatch`
 
-So deployment happens only after a PR is merged.
+For pull requests, deployment continues only when the PR was actually merged.
 
-## 2) Sequential deployments (concurrency)
+## Required GitHub secrets
 
-The workflow uses:
+Add these repository secrets in GitHub under `Settings -> Secrets and variables -> Actions`:
 
-- `concurrency.group: testflight-deploy`
-- `cancel-in-progress: false`
-
-This ensures TestFlight deployments run **one at a time** and preserve release order even if multiple PRs are merged close together.
-
-## 3) Prepare Apple Developer assets
-
-You need these items from Apple Developer / App Store Connect:
-
-1. **iOS Distribution certificate** exported as `.p12`
-2. **Provisioning profile** (`.mobileprovision`) for App Store/TestFlight distribution
-3. **App Store Connect API key** (`.p8`) with permissions to upload builds
-4. API key metadata:
-   - **Key ID**
-   - **Issuer ID**
-
-## 4) Add required GitHub repository secrets
-
-In GitHub: **Repository → Settings → Secrets and variables → Actions → New repository secret**
-
-Add the following secrets exactly as named:
-
-- `BUILD_CERTIFICATE_BASE64`
-  - Base64-encoded `.p12` certificate file content
-- `P12_PASSWORD`
-  - Password used when exporting the `.p12` certificate
-- `BUILD_PROVISION_PROFILE_BASE64`
-  - Base64-encoded `.mobileprovision` file content
-- `KEYCHAIN_PASSWORD`
-  - Temporary keychain password used during the CI run
 - `APP_STORE_CONNECT_KEY_ID`
-  - App Store Connect API key ID
 - `APP_STORE_CONNECT_ISSUER_ID`
-  - App Store Connect issuer ID
 - `APP_STORE_CONNECT_API_KEY`
-  - Raw `.p8` API key content (including BEGIN/END markers)
 
-## 5) Encode certificate and provisioning profile to base64
+`APP_STORE_CONNECT_API_KEY` should contain the raw `.p8` key contents, including the `BEGIN PRIVATE KEY` and `END PRIVATE KEY` lines.
 
-Run locally before adding secrets:
+## Required Xcode project settings
 
-```bash
-# Certificate (.p12)
-base64 -i cert.p12 | pbcopy
+This workflow depends on the Xcode project already being configured for automatic signing.
 
-# Provisioning profile (.mobileprovision)
-base64 -i profile.mobileprovision | pbcopy
-```
+Confirm the Release build for the app target has:
 
-Paste each output into:
-- `BUILD_CERTIFICATE_BASE64`
-- `BUILD_PROVISION_PROFILE_BASE64`
+- `CODE_SIGN_STYLE = Automatic`
+- the correct `DEVELOPMENT_TEAM`
+- the correct `PRODUCT_BUNDLE_IDENTIFIER`
 
-> Tip: Keep the values as a single line if possible.
+In this repository those values live in `HelloWorldiOS/HelloWorldiOS.xcodeproj/project.pbxproj`.
 
-## 6) Verify Xcode project/scheme values used by CI
+## How the workflow works
 
-The workflow builds with:
+1. Checks out the repository.
+2. Installs the latest stable Xcode on the GitHub runner.
+3. Writes the App Store Connect API key to a temporary `.p8` file.
+4. Runs `xcodebuild archive` with:
+   - automatic signing
+   - `-allowProvisioningUpdates`
+   - App Store Connect API key authentication
+5. Runs `xcodebuild -exportArchive` with:
+   - `method = app-store-connect`
+   - `destination = upload`
+   - `signingStyle = automatic`
 
-- Project: `HelloWorldiOS/HelloWorldiOS.xcodeproj`
-- Scheme: `HelloWorldiOS`
-- Configuration: `Release`
+That export step uploads the build to TestFlight.
 
-If these change in the app project, update `.github/workflows/deploy-testflight.yml` accordingly.
+## Notes
 
-## 7) Xcode version selection
+- `manageAppVersionAndBuildNumber` is enabled in the export options so Xcode can manage the uploaded build number during distribution.
+- Deployments stay serialized through the existing `concurrency` setting, so multiple merged PRs do not upload at the same time.
 
-The workflow uses `maxim-lobanov/setup-xcode@v4` with `xcode-version: latest-stable`, so CI automatically picks the latest stable Xcode available on GitHub-hosted macOS runners.
+## Troubleshooting
 
-## 8) Dynamic build number and CFBundleVersion validation
-
-Before building, the workflow:
-
-1. Generates a UTC timestamp build number in `YYYYMMDDHHMMSS` format.
-2. Writes it into `HelloWorldiOS/HelloWorldiOS/Info.plist` as `CFBundleVersion`.
-3. Reads back `CFBundleVersion` and fails the workflow if it does not match.
-
-This guarantees each TestFlight upload has a **unique, traceable build number**.
-
-## 9) Ensure signing settings match CI export mode
-
-The workflow exports with `method = app-store` and `signingStyle = manual`.
-
-Make sure:
-- The provisioning profile is valid for App Store distribution.
-- The certificate/provisioning profile match the app bundle identifier.
-- The Xcode project supports manual signing for release/archive as configured.
-
-## 10) Deployment logging and traceability
-
-The workflow logs and summarizes metadata for each deployment, including:
-
-- PR number
-- source/target branches
-- merge commit SHA
-- generated build number (`CFBundleVersion`)
-- link to the workflow run
-
-This is published in the GitHub Actions run summary (`GITHUB_STEP_SUMMARY`) and can be used as a deployment history list to match TestFlight builds back to their source PR.
-
-## 11) Test the pipeline
-
-1. Open a pull request with your changes.
-2. Merge the pull request.
-3. Go to **Actions** tab and open the `Deploy iOS App to TestFlight` run.
-4. Confirm steps pass:
-   - build number generation/validation
-   - certificate/profile installation
-   - archive
-   - IPA export
-   - upload to TestFlight
-5. Verify the workflow summary includes the expected PR and build number.
-
-## 12) Troubleshooting
-
-- **Signing errors**: Recreate/export certificate and profile, re-encode, and update secrets.
-- **API auth errors**: Re-check `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, and `.p8` key content.
-- **Build/scheme errors**: Confirm project path and scheme name in the workflow.
-- **No deployment after merge**: Verify PR was merged (not just closed) and workflow is enabled.
-- **Duplicate/invalid build number**: Ensure `CFBundleVersion` is not overridden elsewhere in the build settings.
+- **Signing fails**: verify the app target still uses automatic signing and the correct Apple Developer team.
+- **Provisioning fails**: make sure the App Store Connect API key has access to the app and the Apple Developer account.
+- **Upload fails**: verify `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, and `APP_STORE_CONNECT_API_KEY` are correct and active.
+- **Wrong app receives the build**: verify the bundle identifier in the Xcode project matches the App Store Connect app.
