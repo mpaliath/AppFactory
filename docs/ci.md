@@ -54,19 +54,19 @@ In this repository those values live in `HelloWorldiOS/HelloWorldiOS.xcodeproj/p
    - App Store Connect API key authentication
 5. Runs `xcodebuild -exportArchive` with:
    - `method = app-store-connect`
-   - `destination = upload`
+   - `destination = export`
    - `signingStyle = automatic`
+6. Uploads the exported IPA to TestFlight with the App Store Connect API key.
 
-That export step uploads the build to TestFlight.
+This avoids Xcode's App Store metadata fetch during export and keeps the upload step explicit.
 
 ## Notes
 
-- `manageAppVersionAndBuildNumber` is enabled in the export options so Xcode can manage the uploaded build number during distribution.
 - Deployments stay serialized through the existing `concurrency` setting, so multiple merged PRs do not upload at the same time.
 
 ## Troubleshooting
 
 - **Signing fails**: verify the app target still uses automatic signing and the correct Apple Developer team.
 - **Provisioning fails**: make sure the App Store Connect API key has access to the app and the Apple Developer account.
-- **Upload fails**: verify `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, and `APP_STORE_CONNECT_API_KEY` are correct and active.
+- **Upload fails**: verify `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, and `APP_STORE_CONNECT_API_KEY` are correct and active, and that the key can access the app in App Store Connect.
 - **Wrong app receives the build**: verify the bundle identifier in the Xcode project matches the App Store Connect app.
