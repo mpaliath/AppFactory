@@ -50,10 +50,13 @@ jobs:
 
       - name: Write App Store Connect API key
         env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         run: |
           printf '%s' "$APP_STORE_CONNECT_API_KEY" > "$APP_STORE_CONNECT_KEY_PATH"
           chmod 600 "$APP_STORE_CONNECT_KEY_PATH"
+          mkdir -p ~/.appstoreconnect/private_keys
+          cp "$APP_STORE_CONNECT_KEY_PATH" ~/.appstoreconnect/private_keys/"AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
 
       - name: Archive app with automatic signing
         env:
