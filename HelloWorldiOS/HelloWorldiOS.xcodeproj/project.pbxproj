@@ -16,6 +16,11 @@
 		A1B2C3DC2A00000100000001 /* MiniAppListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3DD2A00000100000001 /* MiniAppListView.swift */; };
 		A1B2C3DE2A00000100000001 /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3DF2A00000100000001 /* TodoItem.swift */; };
 		A1B2C3E02A00000100000001 /* TodoMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3E12A00000100000001 /* TodoMiniAppView.swift */; };
+		A1B2C3F42A00000100000001 /* RecipeFinderMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F02A00000100000001 /* RecipeFinderMiniAppView.swift */; };
+		A1B2C3F52A00000100000001 /* RecipeFinderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F12A00000100000001 /* RecipeFinderViewModel.swift */; };
+		A1B2C3F62A00000100000001 /* RecipeFinderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F22A00000100000001 /* RecipeFinderService.swift */; };
+		A1B2C3F72A00000100000001 /* RecipeFinderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F32A00000100000001 /* RecipeFinderModels.swift */; };
+		A1B2C3F82A00000100000001 /* RecipeFinderComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F92A00000100000001 /* RecipeFinderComponents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +35,11 @@
 		A1B2C3DD2A00000100000001 /* MiniAppListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = launcher/MiniAppListView.swift; sourceTree = "<group>"; };
 		A1B2C3DF2A00000100000001 /* TodoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItem.swift; sourceTree = "<group>"; };
 		A1B2C3E12A00000100000001 /* TodoMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoMiniAppView.swift; sourceTree = "<group>"; };
+		A1B2C3F02A00000100000001 /* RecipeFinderMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderMiniAppView.swift; sourceTree = "<group>"; };
+		A1B2C3F12A00000100000001 /* RecipeFinderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderViewModel.swift; sourceTree = "<group>"; };
+		A1B2C3F22A00000100000001 /* RecipeFinderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderService.swift; sourceTree = "<group>"; };
+		A1B2C3F32A00000100000001 /* RecipeFinderModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderModels.swift; sourceTree = "<group>"; };
+		A1B2C3F92A00000100000001 /* RecipeFinderComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderComponents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +98,7 @@
 				A1B2C3DB2A00000100000001 /* MiniAppRegistry.swift */,
 				A1B2C3DD2A00000100000001 /* MiniAppListView.swift */,
 				A1B2C3E62A00000100000001 /* todo */,
+				A1B2C3FA2A00000100000001 /* recipefinder */,
 			);
 			path = miniapps;
 			sourceTree = "<group>";
@@ -99,6 +110,18 @@
 				A1B2C3E12A00000100000001 /* TodoMiniAppView.swift */,
 			);
 			path = todo;
+			sourceTree = "<group>";
+		};
+		A1B2C3FA2A00000100000001 /* recipefinder */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3F32A00000100000001 /* RecipeFinderModels.swift */,
+				A1B2C3F22A00000100000001 /* RecipeFinderService.swift */,
+				A1B2C3F12A00000100000001 /* RecipeFinderViewModel.swift */,
+				A1B2C3F92A00000100000001 /* RecipeFinderComponents.swift */,
+				A1B2C3F02A00000100000001 /* RecipeFinderMiniAppView.swift */,
+			);
+			path = recipefinder;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -178,6 +201,11 @@
 				A1B2C3DC2A00000100000001 /* MiniAppListView.swift in Sources */,
 				A1B2C3DE2A00000100000001 /* TodoItem.swift in Sources */,
 				A1B2C3E02A00000100000001 /* TodoMiniAppView.swift in Sources */,
+				A1B2C3F42A00000100000001 /* RecipeFinderMiniAppView.swift in Sources */,
+				A1B2C3F52A00000100000001 /* RecipeFinderViewModel.swift in Sources */,
+				A1B2C3F62A00000100000001 /* RecipeFinderService.swift in Sources */,
+				A1B2C3F72A00000100000001 /* RecipeFinderModels.swift in Sources */,
+				A1B2C3F82A00000100000001 /* RecipeFinderComponents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
