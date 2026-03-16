@@ -38,6 +38,8 @@ private struct MiniAppDestinationView: View {
         switch destination {
         case "todo":
             TodoMiniAppView()
+        case "recipefinder":
+            RecipeFinderMiniAppView()
         default:
             Text("Mini app unavailable.")
         }
