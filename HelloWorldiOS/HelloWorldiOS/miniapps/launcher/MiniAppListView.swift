@@ -40,6 +40,8 @@ private struct MiniAppDestinationView: View {
             TodoMiniAppView()
         case "recipefinder":
             RecipeFinderMiniAppView()
+        case "timeaudit":
+            TimeAuditMiniAppView()
         default:
             Text("Mini app unavailable.")
         }

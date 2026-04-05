@@ -11,6 +11,11 @@ enum MiniAppRegistry {
             id: "recipefinder",
             name: "Recipe Finder",
             description: "Find one web recipe by cuisine and time limits."
+        ),
+        MiniApp(
+            id: "timeaudit",
+            name: "Time Audit",
+            description: "Passive check-ins that show where your day really went."
         )
     ]
 }
