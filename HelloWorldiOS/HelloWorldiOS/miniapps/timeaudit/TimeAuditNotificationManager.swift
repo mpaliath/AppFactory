@@ -50,7 +50,7 @@ final class TimeAuditNotificationManager {
     func scheduleNotifications(for session: TimeAuditSession) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: pendingIDs(for: session))
 
-        let slots = TimeAuditStore.shared.expectedSlots(for: session, now: TimeAuditStore.shared.eveningDate(for: session))
+        let slots = notificationSlots(for: session)
         for slot in slots where slot > .now {
             let content = UNMutableNotificationContent()
             content.title = "Quick check-in"
@@ -103,8 +103,25 @@ final class TimeAuditNotificationManager {
     }
 
     private func pendingIDs(for session: TimeAuditSession) -> [String] {
-        let slots = TimeAuditStore.shared.expectedSlots(for: session, now: TimeAuditStore.shared.eveningDate(for: session))
+        let slots = notificationSlots(for: session)
         return slots.map { notificationID(for: session.dayStart, slot: $0) }
+    }
+
+    private func notificationSlots(for session: TimeAuditSession) -> [Date] {
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: session.dayStart)
+        components.hour = session.eveningHour
+        components.minute = session.eveningMinute
+        let evening = Calendar.current.date(from: components) ?? session.dayStart.addingTimeInterval(19 * 3600)
+
+        guard evening > session.dayStart else { return [] }
+
+        var slots: [Date] = []
+        var cursor = session.dayStart.addingTimeInterval(TimeInterval(session.intervalMinutes * 60))
+        while cursor <= evening {
+            slots.append(cursor)
+            cursor = cursor.addingTimeInterval(TimeInterval(session.intervalMinutes * 60))
+        }
+        return slots
     }
 
     private func parseISODate(_ value: Any?) -> Date? {

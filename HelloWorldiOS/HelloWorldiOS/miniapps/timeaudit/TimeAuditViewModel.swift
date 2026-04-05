@@ -17,12 +17,16 @@ final class TimeAuditViewModel: ObservableObject {
 
     let store: TimeAuditStore
 
-    init(store: TimeAuditStore = .shared) {
+    init(store: TimeAuditStore) {
         self.store = store
         intervalMinutes = store.state.defaultIntervalMinutes
         eveningHour = store.state.defaultEveningHour
         eveningMinute = store.state.defaultEveningMinute
         selectedGoalIDs = Set(store.state.selectedGoalIDs)
+    }
+
+    convenience init() {
+        self.init(store: TimeAuditStore.shared)
     }
 
     var mode: Mode {

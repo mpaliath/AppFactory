@@ -37,7 +37,7 @@ struct TimeAuditMiniAppView: View {
                     TextField("Detail (optional)", text: $editDetail, axis: .vertical)
                         .lineLimit(3...6)
                 }
-                .navigationTitle(entry.scheduledAt, format: .dateTime.hour().minute())
+                .navigationTitle(entry.scheduledAt.formatted(date: .omitted, time: .shortened))
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel") {
