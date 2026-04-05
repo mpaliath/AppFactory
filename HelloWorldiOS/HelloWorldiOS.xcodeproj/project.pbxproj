@@ -21,6 +21,11 @@
 		A1B2C3F62A00000100000001 /* RecipeFinderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F22A00000100000001 /* RecipeFinderService.swift */; };
 		A1B2C3F72A00000100000001 /* RecipeFinderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F32A00000100000001 /* RecipeFinderModels.swift */; };
 		A1B2C3F82A00000100000001 /* RecipeFinderComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3F92A00000100000001 /* RecipeFinderComponents.swift */; };
+		A1B2C4102A00000100000001 /* TimeAuditModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4112A00000100000001 /* TimeAuditModels.swift */; };
+		A1B2C4122A00000100000001 /* TimeAuditStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4132A00000100000001 /* TimeAuditStore.swift */; };
+		A1B2C4142A00000100000001 /* TimeAuditNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4152A00000100000001 /* TimeAuditNotificationManager.swift */; };
+		A1B2C4162A00000100000001 /* TimeAuditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4172A00000100000001 /* TimeAuditViewModel.swift */; };
+		A1B2C4182A00000100000001 /* TimeAuditMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4192A00000100000001 /* TimeAuditMiniAppView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +45,11 @@
 		A1B2C3F22A00000100000001 /* RecipeFinderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderService.swift; sourceTree = "<group>"; };
 		A1B2C3F32A00000100000001 /* RecipeFinderModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderModels.swift; sourceTree = "<group>"; };
 		A1B2C3F92A00000100000001 /* RecipeFinderComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeFinderComponents.swift; sourceTree = "<group>"; };
+		A1B2C4112A00000100000001 /* TimeAuditModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditModels.swift; sourceTree = "<group>"; };
+		A1B2C4132A00000100000001 /* TimeAuditStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditStore.swift; sourceTree = "<group>"; };
+		A1B2C4152A00000100000001 /* TimeAuditNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditNotificationManager.swift; sourceTree = "<group>"; };
+		A1B2C4172A00000100000001 /* TimeAuditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditViewModel.swift; sourceTree = "<group>"; };
+		A1B2C4192A00000100000001 /* TimeAuditMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditMiniAppView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +109,7 @@
 				A1B2C3DD2A00000100000001 /* MiniAppListView.swift */,
 				A1B2C3E62A00000100000001 /* todo */,
 				A1B2C3FA2A00000100000001 /* recipefinder */,
+				A1B2C41A2A00000100000001 /* timeaudit */,
 			);
 			path = miniapps;
 			sourceTree = "<group>";
@@ -122,6 +133,18 @@
 				A1B2C3F02A00000100000001 /* RecipeFinderMiniAppView.swift */,
 			);
 			path = recipefinder;
+			sourceTree = "<group>";
+		};
+		A1B2C41A2A00000100000001 /* timeaudit */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C4112A00000100000001 /* TimeAuditModels.swift */,
+				A1B2C4132A00000100000001 /* TimeAuditStore.swift */,
+				A1B2C4152A00000100000001 /* TimeAuditNotificationManager.swift */,
+				A1B2C4172A00000100000001 /* TimeAuditViewModel.swift */,
+				A1B2C4192A00000100000001 /* TimeAuditMiniAppView.swift */,
+			);
+			path = timeaudit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -206,6 +229,11 @@
 				A1B2C3F62A00000100000001 /* RecipeFinderService.swift in Sources */,
 				A1B2C3F72A00000100000001 /* RecipeFinderModels.swift in Sources */,
 				A1B2C3F82A00000100000001 /* RecipeFinderComponents.swift in Sources */,
+				A1B2C4102A00000100000001 /* TimeAuditModels.swift in Sources */,
+				A1B2C4122A00000100000001 /* TimeAuditStore.swift in Sources */,
+				A1B2C4142A00000100000001 /* TimeAuditNotificationManager.swift in Sources */,
+				A1B2C4162A00000100000001 /* TimeAuditViewModel.swift in Sources */,
+				A1B2C4182A00000100000001 /* TimeAuditMiniAppView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
