@@ -89,6 +89,7 @@ final class TimeAuditViewModel: ObservableObject {
         eveningHour = store.state.defaultEveningHour
         eveningMinute = store.state.defaultEveningMinute
         selectedGoalIDs = Set(store.state.selectedGoalIDs)
+        store.ensureUnansweredCheckInsBecomeNo()
         store.ensureMissedCheckIns()
         ensureNotificationPermissionAndSyncState()
     }
@@ -126,6 +127,7 @@ final class TimeAuditViewModel: ObservableObject {
                 notificationHint = "We still need notification permission to send check-ins."
             }
 
+            store.ensureUnansweredCheckInsBecomeNo()
             store.ensureMissedCheckIns()
         }
     }
@@ -155,6 +157,8 @@ final class TimeAuditViewModel: ObservableObject {
             switch permission {
             case .allowed:
                 notificationHint = nil
+                store.ensureUnansweredCheckInsBecomeNo()
+                store.ensureMissedCheckIns()
                 if let session = store.todaySession {
                     await TimeAuditNotificationManager.shared.scheduleNotifications(for: session)
                 }
