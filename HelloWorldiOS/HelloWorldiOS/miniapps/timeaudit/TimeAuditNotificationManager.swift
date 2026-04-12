@@ -13,6 +13,12 @@ final class TimeAuditNotificationManager {
 
     private init() {}
 
+    enum PermissionState {
+        case notDetermined
+        case denied
+        case allowed
+    }
+
     func configureActions() {
         let yes = UNNotificationAction(
             identifier: TimeAuditNotificationAction.yesIdentifier,
@@ -43,11 +49,29 @@ final class TimeAuditNotificationManager {
         UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 
-    func requestAuthorization() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+    func permissionState() async -> PermissionState {
+        let settings = await notificationSettings()
+        switch settings.authorizationStatus {
+        case .authorized, .provisional, .ephemeral:
+            return .allowed
+        case .denied:
+            return .denied
+        case .notDetermined:
+            return .notDetermined
+        @unknown default:
+            return .notDetermined
+        }
     }
 
-    func scheduleNotifications(for session: TimeAuditSession) {
+    func requestAuthorizationIfNeeded() async -> PermissionState {
+        let current = await permissionState()
+        guard current == .notDetermined else { return current }
+
+        _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+        return await permissionState()
+    }
+
+    func scheduleNotifications(for session: TimeAuditSession) async {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: pendingIDs(for: session))
 
         let slots = notificationSlots(for: session)
@@ -66,7 +90,7 @@ final class TimeAuditNotificationManager {
             let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
             let id = notificationID(for: session.dayStart, slot: slot)
             let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-            UNUserNotificationCenter.current().add(request)
+            try? await UNUserNotificationCenter.current().add(request)
         }
     }
 
@@ -127,5 +151,13 @@ final class TimeAuditNotificationManager {
     private func parseISODate(_ value: Any?) -> Date? {
         guard let string = value as? String else { return nil }
         return ISO8601DateFormatter().date(from: string)
+    }
+
+    private func notificationSettings() async -> UNNotificationSettings {
+        await withCheckedContinuation { continuation in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                continuation.resume(returning: settings)
+            }
+        }
     }
 }
