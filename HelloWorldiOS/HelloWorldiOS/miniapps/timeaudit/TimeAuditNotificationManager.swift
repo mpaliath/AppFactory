@@ -105,16 +105,48 @@ final class TimeAuditNotificationManager {
         switch response.actionIdentifier {
         case TimeAuditNotificationAction.yesIdentifier:
             Task { @MainActor in
+                TimeAuditStore.shared.ensureUnansweredCheckInsBecomeNo(for: slot)
                 TimeAuditStore.shared.updateCheckIn(sessionDayStart: sessionDay, scheduledAt: slot, status: .aligned, detail: nil)
             }
         case TimeAuditNotificationAction.noIdentifier:
             Task { @MainActor in
-                TimeAuditStore.shared.updateCheckIn(sessionDayStart: sessionDay, scheduledAt: slot, status: .notAligned, detail: nil)
+                TimeAuditStore.shared.ensureUnansweredCheckInsBecomeNo(for: slot)
+                let endedAt = Date.now
+                let detail = TimeAuditStore.shared.detailForNoAction(
+                    sessionDayStart: sessionDay,
+                    endedAt: endedAt,
+                    source: .manualNo
+                )
+                TimeAuditStore.shared.updateCheckIn(
+                    sessionDayStart: sessionDay,
+                    scheduledAt: slot,
+                    respondedAt: endedAt,
+                    status: .notAligned,
+                    detail: detail
+                )
             }
         case TimeAuditNotificationAction.detailIdentifier:
             let typed = (response as? UNTextInputNotificationResponse)?.userText
             Task { @MainActor in
-                TimeAuditStore.shared.updateCheckIn(sessionDayStart: sessionDay, scheduledAt: slot, status: .notAligned, detail: typed)
+                TimeAuditStore.shared.ensureUnansweredCheckInsBecomeNo(for: slot)
+                let endedAt = Date.now
+                let durationDetail = TimeAuditStore.shared.detailForNoAction(
+                    sessionDayStart: sessionDay,
+                    endedAt: endedAt,
+                    source: .manualNo
+                ) ?? ""
+                let fullDetail = [durationDetail, typed]
+                    .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " ")
+
+                TimeAuditStore.shared.updateCheckIn(
+                    sessionDayStart: sessionDay,
+                    scheduledAt: slot,
+                    respondedAt: endedAt,
+                    status: .notAligned,
+                    detail: fullDetail
+                )
             }
         default:
             break

@@ -96,17 +96,27 @@ final class TimeAuditStore: ObservableObject {
     }
 
     func updateCheckIn(sessionDayStart: Date, scheduledAt: Date, status: CheckInStatus, detail: String?) {
+        updateCheckIn(
+            sessionDayStart: sessionDayStart,
+            scheduledAt: scheduledAt,
+            respondedAt: .now,
+            status: status,
+            detail: detail
+        )
+    }
+
+    func updateCheckIn(sessionDayStart: Date, scheduledAt: Date, respondedAt: Date, status: CheckInStatus, detail: String?) {
         guard let idx = indexOfSession(for: sessionDayStart) else { return }
         var session = state.sessions[idx]
         if let checkInIndex = session.checkIns.firstIndex(where: { Calendar.current.compare($0.scheduledAt, to: scheduledAt, toGranularity: .minute) == .orderedSame }) {
             session.checkIns[checkInIndex].status = status
-            session.checkIns[checkInIndex].respondedAt = .now
+            session.checkIns[checkInIndex].respondedAt = respondedAt
             session.checkIns[checkInIndex].detail = normalizedDetail(detail)
         } else {
             session.checkIns.append(
                 TimeAuditCheckIn(
                     scheduledAt: scheduledAt,
-                    respondedAt: .now,
+                    respondedAt: respondedAt,
                     status: status,
                     detail: normalizedDetail(detail)
                 )
@@ -134,6 +144,54 @@ final class TimeAuditStore: ObservableObject {
         session.checkIns.sort { $0.scheduledAt < $1.scheduledAt }
         state.sessions[idx] = session
         persist()
+    }
+
+    func ensureUnansweredCheckInsBecomeNo(for now: Date = .now) {
+        guard let idx = indexOfSession(for: Calendar.current.startOfDay(for: now)) else { return }
+        var session = state.sessions[idx]
+        let evening = eveningDate(for: session)
+        let intervalSeconds = TimeInterval(session.intervalMinutes * 60)
+
+        let slots = expectedSlots(for: session, now: now)
+        for slot in slots {
+            let nextSlot = slot.addingTimeInterval(intervalSeconds)
+            let noDeadline = min(nextSlot, evening)
+            guard now >= noDeadline else { continue }
+
+            let existingIndex = session.checkIns.firstIndex(where: { existing in
+                Calendar.current.compare(existing.scheduledAt, to: slot, toGranularity: .minute) == .orderedSame
+            })
+
+            let autoNoDetail = activityDurationDetail(from: session.dayStart, to: noDeadline, source: .autoTimeout)
+
+            if let existingIndex {
+                if session.checkIns[existingIndex].status == .missed {
+                    session.checkIns[existingIndex].status = .notAligned
+                    session.checkIns[existingIndex].respondedAt = noDeadline
+                    session.checkIns[existingIndex].detail = autoNoDetail
+                }
+                continue
+            }
+
+            session.checkIns.append(
+                TimeAuditCheckIn(
+                    scheduledAt: slot,
+                    respondedAt: noDeadline,
+                    status: .notAligned,
+                    detail: autoNoDetail
+                )
+            )
+        }
+
+        session.checkIns.sort { $0.scheduledAt < $1.scheduledAt }
+        state.sessions[idx] = session
+        persist()
+    }
+
+    func detailForNoAction(sessionDayStart: Date, endedAt: Date, source: NoActionSource) -> String? {
+        guard let idx = indexOfSession(for: sessionDayStart) else { return nil }
+        let start = state.sessions[idx].dayStart
+        return activityDurationDetail(from: start, to: endedAt, source: source)
     }
 
     func editCheckIn(id: UUID, status: CheckInStatus, detail: String?) {
@@ -183,4 +241,26 @@ final class TimeAuditStore: ObservableObject {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? nil : trimmed
     }
+
+    private func activityDurationDetail(from start: Date, to end: Date, source: NoActionSource) -> String {
+        let duration = max(0, end.timeIntervalSince(start))
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        formatter.maximumUnitCount = 2
+        formatter.zeroFormattingBehavior = [.dropAll]
+
+        let pretty = formatter.string(from: duration) ?? "0m"
+        switch source {
+        case .manualNo:
+            return "Stopped after \(pretty)."
+        case .autoTimeout:
+            return "No response; auto-stopped after \(pretty)."
+        }
+    }
+}
+
+enum NoActionSource {
+    case manualNo
+    case autoTimeout
 }
