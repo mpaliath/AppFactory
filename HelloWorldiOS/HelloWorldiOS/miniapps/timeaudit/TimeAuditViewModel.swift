@@ -14,6 +14,7 @@ final class TimeAuditViewModel: ObservableObject {
     @Published var eveningHour: Int
     @Published var eveningMinute: Int
     @Published var selectedGoalIDs: Set<UUID>
+    @Published var notificationHint: String?
 
     let store: TimeAuditStore
 
@@ -23,6 +24,7 @@ final class TimeAuditViewModel: ObservableObject {
         eveningHour = store.state.defaultEveningHour
         eveningMinute = store.state.defaultEveningMinute
         selectedGoalIDs = Set(store.state.selectedGoalIDs)
+        notificationHint = nil
     }
 
     convenience init() {
@@ -88,6 +90,7 @@ final class TimeAuditViewModel: ObservableObject {
         eveningMinute = store.state.defaultEveningMinute
         selectedGoalIDs = Set(store.state.selectedGoalIDs)
         store.ensureMissedCheckIns()
+        syncNotificationPermissionState()
     }
 
     func createInitialGoalAndStart() {
@@ -110,9 +113,21 @@ final class TimeAuditViewModel: ObservableObject {
 
         guard let session = store.startTodaySession() else { return }
         TimeAuditNotificationManager.shared.configureActions()
-        TimeAuditNotificationManager.shared.requestAuthorization()
-        TimeAuditNotificationManager.shared.scheduleNotifications(for: session)
-        store.ensureMissedCheckIns()
+        Task { @MainActor in
+            let permission = await TimeAuditNotificationManager.shared.requestAuthorizationIfNeeded()
+
+            switch permission {
+            case .allowed:
+                notificationHint = nil
+                await TimeAuditNotificationManager.shared.scheduleNotifications(for: session)
+            case .denied:
+                notificationHint = "Notifications are disabled. Enable them in Settings to receive check-ins."
+            case .notDetermined:
+                notificationHint = "We still need notification permission to send check-ins."
+            }
+
+            store.ensureMissedCheckIns()
+        }
     }
 
     func applyPreferences() {
@@ -132,5 +147,22 @@ final class TimeAuditViewModel: ObservableObject {
 
     func editCheckIn(id: UUID, status: CheckInStatus, detail: String) {
         store.editCheckIn(id: id, status: status, detail: detail)
+    }
+
+    private func syncNotificationPermissionState() {
+        Task { @MainActor in
+            let permission = await TimeAuditNotificationManager.shared.permissionState()
+            switch permission {
+            case .allowed:
+                notificationHint = nil
+                if let session = store.todaySession {
+                    await TimeAuditNotificationManager.shared.scheduleNotifications(for: session)
+                }
+            case .denied:
+                notificationHint = "Notifications are disabled. Enable them in Settings to receive check-ins."
+            case .notDetermined:
+                notificationHint = "Enable notifications so Time Audit can send check-ins during day mode."
+            }
+        }
     }
 }

@@ -78,6 +78,7 @@ private struct OnboardingView: View {
             }
 
             ScheduleSettingsView(viewModel: viewModel)
+            NotificationHintView(message: viewModel.notificationHint)
 
             Button("Start Day Mode") {
                 if viewModel.allGoals.isEmpty {
@@ -117,6 +118,7 @@ private struct DayModeView: View {
 
             Text("Leave the app and continue your day. Check-ins happen automatically via notifications.")
                 .foregroundStyle(.secondary)
+            NotificationHintView(message: viewModel.notificationHint)
 
             Divider()
             Text(viewModel.consistencyProgressText)
@@ -140,6 +142,7 @@ private struct ReflectionModeView: View {
 
             GoalPreferencesView(viewModel: viewModel)
             ScheduleSettingsView(viewModel: viewModel)
+            NotificationHintView(message: viewModel.notificationHint)
 
             if viewModel.timeline.isEmpty {
                 ContentUnavailableView(
@@ -161,6 +164,21 @@ private struct ReflectionModeView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private struct NotificationHintView: View {
+    let message: String?
+
+    var body: some View {
+        if let message, !message.isEmpty {
+            Label(message, systemImage: "bell.badge")
+                .font(.footnote)
+                .foregroundStyle(.orange)
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
     }
 }
