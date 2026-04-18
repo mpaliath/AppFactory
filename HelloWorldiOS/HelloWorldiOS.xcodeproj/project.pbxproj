@@ -26,6 +26,10 @@
 		A1B2C4142A00000100000001 /* TimeAuditNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4152A00000100000001 /* TimeAuditNotificationManager.swift */; };
 		A1B2C4162A00000100000001 /* TimeAuditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4172A00000100000001 /* TimeAuditViewModel.swift */; };
 		A1B2C4182A00000100000001 /* TimeAuditMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4192A00000100000001 /* TimeAuditMiniAppView.swift */; };
+		A1B2C4202A00000100000001 /* PokerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4212A00000100000001 /* PokerModels.swift */; };
+		A1B2C4222A00000100000001 /* PokerHandEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4232A00000100000001 /* PokerHandEvaluator.swift */; };
+		A1B2C4242A00000100000001 /* PokerGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4252A00000100000001 /* PokerGameViewModel.swift */; };
+		A1B2C4262A00000100000001 /* PokerMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4272A00000100000001 /* PokerMiniAppView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +54,10 @@
 		A1B2C4152A00000100000001 /* TimeAuditNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditNotificationManager.swift; sourceTree = "<group>"; };
 		A1B2C4172A00000100000001 /* TimeAuditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditViewModel.swift; sourceTree = "<group>"; };
 		A1B2C4192A00000100000001 /* TimeAuditMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAuditMiniAppView.swift; sourceTree = "<group>"; };
+		A1B2C4212A00000100000001 /* PokerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerModels.swift; sourceTree = "<group>"; };
+		A1B2C4232A00000100000001 /* PokerHandEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerHandEvaluator.swift; sourceTree = "<group>"; };
+		A1B2C4252A00000100000001 /* PokerGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerGameViewModel.swift; sourceTree = "<group>"; };
+		A1B2C4272A00000100000001 /* PokerMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerMiniAppView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +117,7 @@
 				A1B2C3DD2A00000100000001 /* MiniAppListView.swift */,
 				A1B2C3E62A00000100000001 /* todo */,
 				A1B2C3FA2A00000100000001 /* recipefinder */,
+				A1B2C4282A00000100000001 /* poker */,
 				A1B2C41A2A00000100000001 /* timeaudit */,
 			);
 			path = miniapps;
@@ -145,6 +154,17 @@
 				A1B2C4192A00000100000001 /* TimeAuditMiniAppView.swift */,
 			);
 			path = timeaudit;
+			sourceTree = "<group>";
+		};
+		A1B2C4282A00000100000001 /* poker */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C4212A00000100000001 /* PokerModels.swift */,
+				A1B2C4232A00000100000001 /* PokerHandEvaluator.swift */,
+				A1B2C4252A00000100000001 /* PokerGameViewModel.swift */,
+				A1B2C4272A00000100000001 /* PokerMiniAppView.swift */,
+			);
+			path = poker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -234,6 +254,10 @@
 				A1B2C4142A00000100000001 /* TimeAuditNotificationManager.swift in Sources */,
 				A1B2C4162A00000100000001 /* TimeAuditViewModel.swift in Sources */,
 				A1B2C4182A00000100000001 /* TimeAuditMiniAppView.swift in Sources */,
+				A1B2C4202A00000100000001 /* PokerModels.swift in Sources */,
+				A1B2C4222A00000100000001 /* PokerHandEvaluator.swift in Sources */,
+				A1B2C4242A00000100000001 /* PokerGameViewModel.swift in Sources */,
+				A1B2C4262A00000100000001 /* PokerMiniAppView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

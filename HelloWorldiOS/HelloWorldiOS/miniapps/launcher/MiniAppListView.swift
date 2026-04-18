@@ -42,6 +42,8 @@ private struct MiniAppDestinationView: View {
             RecipeFinderMiniAppView()
         case "timeaudit":
             TimeAuditMiniAppView()
+        case "poker":
+            PokerMiniAppView()
         default:
             Text("Mini app unavailable.")
         }
