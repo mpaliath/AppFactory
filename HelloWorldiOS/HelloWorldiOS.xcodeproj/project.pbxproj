@@ -30,6 +30,11 @@
 		A1B2C4222A00000100000001 /* PokerHandEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4232A00000100000001 /* PokerHandEvaluator.swift */; };
 		A1B2C4242A00000100000001 /* PokerGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4252A00000100000001 /* PokerGameViewModel.swift */; };
 		A1B2C4262A00000100000001 /* PokerMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4272A00000100000001 /* PokerMiniAppView.swift */; };
+		A1B2C4302A00000100000001 /* CardScannerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4312A00000100000001 /* CardScannerModels.swift */; };
+		A1B2C4322A00000100000001 /* CardScannerTextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4332A00000100000001 /* CardScannerTextParser.swift */; };
+		A1B2C4342A00000100000001 /* CardScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4352A00000100000001 /* CardScannerViewModel.swift */; };
+		A1B2C4362A00000100000001 /* CardScannerCameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */; };
+		A1B2C4382A00000100000001 /* CardScannerMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +63,11 @@
 		A1B2C4232A00000100000001 /* PokerHandEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerHandEvaluator.swift; sourceTree = "<group>"; };
 		A1B2C4252A00000100000001 /* PokerGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerGameViewModel.swift; sourceTree = "<group>"; };
 		A1B2C4272A00000100000001 /* PokerMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerMiniAppView.swift; sourceTree = "<group>"; };
+		A1B2C4312A00000100000001 /* CardScannerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerModels.swift; sourceTree = "<group>"; };
+		A1B2C4332A00000100000001 /* CardScannerTextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerTextParser.swift; sourceTree = "<group>"; };
+		A1B2C4352A00000100000001 /* CardScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerViewModel.swift; sourceTree = "<group>"; };
+		A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerCameraPicker.swift; sourceTree = "<group>"; };
+		A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerMiniAppView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +129,7 @@
 				A1B2C3FA2A00000100000001 /* recipefinder */,
 				A1B2C4282A00000100000001 /* poker */,
 				A1B2C41A2A00000100000001 /* timeaudit */,
+				A1B2C43A2A00000100000001 /* cardscanner */,
 			);
 			path = miniapps;
 			sourceTree = "<group>";
@@ -165,6 +176,18 @@
 				A1B2C4272A00000100000001 /* PokerMiniAppView.swift */,
 			);
 			path = poker;
+			sourceTree = "<group>";
+		};
+		A1B2C43A2A00000100000001 /* cardscanner */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C4312A00000100000001 /* CardScannerModels.swift */,
+				A1B2C4332A00000100000001 /* CardScannerTextParser.swift */,
+				A1B2C4352A00000100000001 /* CardScannerViewModel.swift */,
+				A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */,
+				A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */,
+			);
+			path = cardscanner;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,6 +281,11 @@
 				A1B2C4222A00000100000001 /* PokerHandEvaluator.swift in Sources */,
 				A1B2C4242A00000100000001 /* PokerGameViewModel.swift in Sources */,
 				A1B2C4262A00000100000001 /* PokerMiniAppView.swift in Sources */,
+				A1B2C4302A00000100000001 /* CardScannerModels.swift in Sources */,
+				A1B2C4322A00000100000001 /* CardScannerTextParser.swift in Sources */,
+				A1B2C4342A00000100000001 /* CardScannerViewModel.swift in Sources */,
+				A1B2C4362A00000100000001 /* CardScannerCameraPicker.swift in Sources */,
+				A1B2C4382A00000100000001 /* CardScannerMiniAppView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
