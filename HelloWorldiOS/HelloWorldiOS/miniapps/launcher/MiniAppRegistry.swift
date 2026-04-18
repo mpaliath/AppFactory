@@ -21,6 +21,11 @@ enum MiniAppRegistry {
             id: "timeaudit",
             name: "Time Audit",
             description: "Passive check-ins that show where your day really went."
+        ),
+        MiniApp(
+            id: "cardscanner",
+            name: "Card Scanner",
+            description: "Scan a business card and save it as a contact."
         )
     ]
 }
