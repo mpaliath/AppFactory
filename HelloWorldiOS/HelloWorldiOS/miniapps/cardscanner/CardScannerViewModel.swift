@@ -1,7 +1,7 @@
 import Contacts
 import SwiftUI
 import UIKit
-import Vision
+@preconcurrency import Vision
 
 @MainActor
 final class CardScannerViewModel: ObservableObject {
@@ -83,7 +83,7 @@ final class CardScannerViewModel: ObservableObject {
             return
         }
 
-        try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             contactStore.requestAccess(for: .contacts) { granted, error in
                 if let error {
                     continuation.resume(throwing: error)
