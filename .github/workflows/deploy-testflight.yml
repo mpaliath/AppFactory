@@ -103,6 +103,7 @@ jobs:
             -sdk iphoneos \
             -archivePath "$ARCHIVE_PATH" \
             CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE="$PP_UUID" \
             PROVISIONING_PROFILE_SPECIFIER="$PP_NAME" \
             DEVELOPMENT_TEAM=U4J6FD52VY \
