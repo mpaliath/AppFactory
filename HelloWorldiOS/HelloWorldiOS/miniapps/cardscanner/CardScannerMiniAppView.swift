@@ -5,52 +5,19 @@ struct CardScannerMiniAppView: View {
 
     var body: some View {
         Form {
-            Section("Scan") {
-                Button("Take Card Photo") {
-                    viewModel.isShowingCamera = true
-                }
+            scanSection
 
-                if let image = viewModel.capturedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxHeight: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
+            if viewModel.isInReviewStep {
+                CardScannerTokenPoolView(
+                    blocks: viewModel.availableBlocks,
+                    onMerge: viewModel.mergeBlock(sourceID:into:)
+                )
+
+                CardScannerDropFormView(viewModel: viewModel)
             }
 
-            Section("Detected Details") {
-                TextField("Full Name", text: $viewModel.scannedContact.fullName)
-                    .textInputAutocapitalization(.words)
-                TextField("Phone Number", text: $viewModel.scannedContact.phoneNumber)
-                    .keyboardType(.phonePad)
-                TextField("Company", text: $viewModel.scannedContact.companyName)
-                    .textInputAutocapitalization(.words)
-            }
-
-            Section {
-                Button {
-                    Task {
-                        await viewModel.saveContact()
-                    }
-                } label: {
-                    if viewModel.isSaving {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text("Save Contact")
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-                .disabled(viewModel.isSaving || !viewModel.scannedContact.canSave)
-            }
-
-            if let message = viewModel.statusMessage {
-                Section("Status") {
-                    Text(message)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            saveSection
+            statusSection
         }
         .navigationTitle("Card Scanner")
         .sheet(isPresented: $viewModel.isShowingCamera) {
@@ -58,6 +25,51 @@ struct CardScannerMiniAppView: View {
                 viewModel.handleCapturedImage(image)
             }
             .ignoresSafeArea()
+        }
+    }
+
+    private var scanSection: some View {
+        Section("Scan") {
+            Button("Take Card Photo") {
+                viewModel.isShowingCamera = true
+            }
+
+            if let image = viewModel.capturedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxHeight: 220)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+
+    private var saveSection: some View {
+        Section {
+            Button {
+                Task {
+                    await viewModel.saveContact()
+                }
+            } label: {
+                if viewModel.isSaving {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Text("Save Contact")
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .disabled(viewModel.isSaving || !viewModel.scannedContact.canSave)
+        }
+    }
+
+    @ViewBuilder
+    private var statusSection: some View {
+        if let message = viewModel.statusMessage {
+            Section("Status") {
+                Text(message)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }

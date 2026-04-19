@@ -1,82 +1,85 @@
 import Foundation
 
 struct CardScannerTextParser {
-    func parse(lines: [String]) -> ScannedContact {
+    private let phoneAllowed = CharacterSet(charactersIn: "+0123456789()- ")
+
+    func parse(lines: [String]) -> ParsedCardScan {
         let cleanedLines = lines
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
-        let phoneLine = cleanedLines.first(where: isLikelyPhoneNumber) ?? ""
-        let companyLine = cleanedLines.first(where: isLikelyCompanyName) ?? ""
+        var foundPhones: [String] = []
+        var blocks: [ScannedTextBlock] = []
 
-        let nameLine = cleanedLines.first { line in
-            !isLikelyPhoneNumber(line)
-                && !isLikelyEmail(line)
-                && !isLikelyAddress(line)
-                && !isLikelyCompanyName(line)
-                && looksLikePersonName(line)
-        } ?? cleanedLines.first ?? ""
-
-        return ScannedContact(
-            fullName: normalizeName(nameLine),
-            phoneNumber: normalizePhone(phoneLine),
-            companyName: companyLine
-        )
-    }
-
-    private func isLikelyPhoneNumber(_ text: String) -> Bool {
-        let digitCount = text.filter { $0.isNumber }.count
-        return digitCount >= 10
-    }
-
-    private func isLikelyEmail(_ text: String) -> Bool {
-        text.contains("@")
-    }
-
-    private func isLikelyAddress(_ text: String) -> Bool {
-        let lowercased = text.lowercased()
-        return lowercased.contains("street")
-            || lowercased.contains("st.")
-            || lowercased.contains("avenue")
-            || lowercased.contains("ave")
-            || lowercased.contains("road")
-            || lowercased.contains("rd")
-            || lowercased.contains("suite")
-    }
-
-    private func isLikelyCompanyName(_ text: String) -> Bool {
-        let lowercased = text.lowercased()
-        return lowercased.contains("inc")
-            || lowercased.contains("llc")
-            || lowercased.contains("corp")
-            || lowercased.contains("company")
-            || lowercased.contains("co.")
-            || lowercased.contains("technologies")
-    }
-
-    private func looksLikePersonName(_ text: String) -> Bool {
-        let words = text.split(separator: " ")
-        guard words.count >= 2 && words.count <= 4 else {
-            return false
-        }
-
-        return words.allSatisfy { word in
-            guard let firstCharacter = word.first else {
-                return false
+        for line in cleanedLines {
+            for phone in extractPhoneNumbers(from: line) {
+                let normalized = normalizePhone(phone)
+                if !normalized.isEmpty {
+                    foundPhones.append(normalized)
+                }
             }
-            return firstCharacter.isUppercase
+
+            let nonPhoneText = removePhones(from: line)
+            blocks.append(contentsOf: splitIntoTextBlocks(nonPhoneText))
+        }
+
+        let uniquePhones = Array(NSOrderedSet(array: foundPhones)) as? [String] ?? foundPhones
+        let uniqueBlocks = dedupeBlocks(blocks)
+
+        return ParsedCardScan(textBlocks: uniqueBlocks, phoneNumbers: uniquePhones)
+    }
+
+    func normalizePhone(_ text: String) -> String {
+        text
+            .unicodeScalars
+            .filter { phoneAllowed.contains($0) }
+            .map(String.init)
+            .joined()
+            .replacingOccurrences(of: ".", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func extractPhoneNumbers(from text: String) -> [String] {
+        let pattern = #"(?:\+?\d[\d\s().-]{7,}\d)"#
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            return []
+        }
+
+        let nsRange = NSRange(text.startIndex..<text.endIndex, in: text)
+        let matches = regex.matches(in: text, range: nsRange)
+        return matches.compactMap { match in
+            guard let range = Range(match.range, in: text) else { return nil }
+            return String(text[range])
         }
     }
 
-    private func normalizeName(_ text: String) -> String {
-        text
-            .split(separator: " ")
-            .map { $0.capitalized }
-            .joined(separator: " ")
+    private func removePhones(from text: String) -> String {
+        var output = text
+        for phone in extractPhoneNumbers(from: text) {
+            output = output.replacingOccurrences(of: phone, with: " ")
+        }
+        return output
     }
 
-    private func normalizePhone(_ text: String) -> String {
-        let allowedCharacters = CharacterSet(charactersIn: "+0123456789()- .")
-        return text.unicodeScalars.filter { allowedCharacters.contains($0) }.map(String.init).joined()
+    private func splitIntoTextBlocks(_ text: String) -> [ScannedTextBlock] {
+        text
+            .split(whereSeparator: { $0.isNewline })
+            .flatMap { part in
+                part
+                    .split(separator: ",")
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                    .map { ScannedTextBlock(text: $0) }
+            }
+    }
+
+    private func dedupeBlocks(_ blocks: [ScannedTextBlock]) -> [ScannedTextBlock] {
+        var seen: Set<String> = []
+        return blocks.filter { block in
+            let key = block.text.lowercased()
+            guard !seen.contains(key) else { return false }
+            seen.insert(key)
+            return true
+        }
     }
 }
