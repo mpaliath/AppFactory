@@ -3,6 +3,7 @@ import Foundation
 struct ScannedContact {
     var fullName: String = ""
     var companyName: String = ""
+    var emailAddress: String = ""
     var phoneNumbers: [String] = [""]
     var notes: String = ""
 
@@ -23,5 +24,6 @@ struct ScannedTextBlock: Identifiable, Equatable {
 
 struct ParsedCardScan {
     var textBlocks: [ScannedTextBlock]
+    var emailAddresses: [String]
     var phoneNumbers: [String]
 }

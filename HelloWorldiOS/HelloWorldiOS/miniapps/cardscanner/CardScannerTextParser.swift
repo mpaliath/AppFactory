@@ -8,10 +8,15 @@ struct CardScannerTextParser {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
+        var foundEmails: [String] = []
         var foundPhones: [String] = []
         var blocks: [ScannedTextBlock] = []
 
         for line in cleanedLines {
+            for email in extractEmails(from: line) {
+                foundEmails.append(email.lowercased())
+            }
+
             for phone in extractPhoneNumbers(from: line) {
                 let normalized = normalizePhone(phone)
                 if !normalized.isEmpty {
@@ -19,14 +24,19 @@ struct CardScannerTextParser {
                 }
             }
 
-            let nonPhoneText = removePhones(from: line)
-            blocks.append(contentsOf: splitIntoTextBlocks(nonPhoneText))
+            let nonPhoneOrEmailText = removePhonesAndEmails(from: line)
+            blocks.append(contentsOf: splitIntoTextBlocks(nonPhoneOrEmailText))
         }
 
+        let uniqueEmails = Array(NSOrderedSet(array: foundEmails)) as? [String] ?? foundEmails
         let uniquePhones = Array(NSOrderedSet(array: foundPhones)) as? [String] ?? foundPhones
         let uniqueBlocks = dedupeBlocks(blocks)
 
-        return ParsedCardScan(textBlocks: uniqueBlocks, phoneNumbers: uniquePhones)
+        return ParsedCardScan(
+            textBlocks: uniqueBlocks,
+            emailAddresses: uniqueEmails,
+            phoneNumbers: uniquePhones
+        )
     }
 
     func normalizePhone(_ text: String) -> String {
@@ -53,10 +63,27 @@ struct CardScannerTextParser {
         }
     }
 
-    private func removePhones(from text: String) -> String {
+    private func extractEmails(from text: String) -> [String] {
+        let pattern = #"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else {
+            return []
+        }
+
+        let nsRange = NSRange(text.startIndex..<text.endIndex, in: text)
+        let matches = regex.matches(in: text, range: nsRange)
+        return matches.compactMap { match in
+            guard let range = Range(match.range, in: text) else { return nil }
+            return String(text[range])
+        }
+    }
+
+    private func removePhonesAndEmails(from text: String) -> String {
         var output = text
         for phone in extractPhoneNumbers(from: text) {
             output = output.replacingOccurrences(of: phone, with: " ")
+        }
+        for email in extractEmails(from: text) {
+            output = output.replacingOccurrences(of: email, with: " ")
         }
         return output
     }

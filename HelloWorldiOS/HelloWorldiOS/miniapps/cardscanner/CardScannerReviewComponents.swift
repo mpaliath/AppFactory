@@ -48,6 +48,15 @@ struct CardScannerDropFormView: View {
                 onDrop: viewModel.useBlock(_:for:)
             )
 
+            DroppableField(
+                title: "Email",
+                text: $viewModel.scannedContact.emailAddress,
+                keyboardType: .emailAddress,
+                autocapitalization: .never,
+                dropField: .email,
+                onDrop: viewModel.useBlock(_:for:)
+            )
+
             ForEach(Array(viewModel.scannedContact.phoneNumbers.indices), id: \.self) { index in
                 DroppableField(
                     title: "Phone \(index + 1)",
@@ -82,6 +91,7 @@ struct DroppableField: View {
     let title: String
     @Binding var text: String
     var keyboardType: UIKeyboardType = .default
+    var autocapitalization: TextInputAutocapitalization = .words
     let dropField: ContactDropField
     let onDrop: (UUID, ContactDropField) -> Void
     var onTextChange: (() -> Void)?
@@ -89,7 +99,7 @@ struct DroppableField: View {
     var body: some View {
         TextField(title, text: $text, axis: title == "Notes" ? .vertical : .horizontal)
             .keyboardType(keyboardType)
-            .textInputAutocapitalization(title == "Notes" ? .sentences : .words)
+            .textInputAutocapitalization(title == "Notes" ? .sentences : autocapitalization)
             .lineLimit(title == "Notes" ? 3...6 : 1...1)
             .onChange(of: text) { _, _ in
                 onTextChange?()
@@ -115,8 +125,6 @@ struct DraggableBlockChip: View {
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.blue.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-            .onDrag {
-                NSItemProvider(object: id.uuidString as NSString)
-            }
+            .draggable(id.uuidString)
     }
 }

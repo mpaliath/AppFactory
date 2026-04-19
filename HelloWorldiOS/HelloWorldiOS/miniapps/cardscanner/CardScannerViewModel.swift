@@ -47,6 +47,7 @@ final class CardScannerViewModel: ObservableObject {
                 self.scannedContact = ScannedContact(
                     fullName: "",
                     companyName: "",
+                    emailAddress: parsedResult.emailAddresses.first ?? "",
                     phoneNumbers: Array(repeating: "", count: max(1, parsedResult.phoneNumbers.count)),
                     notes: ""
                 )
@@ -96,6 +97,8 @@ final class CardScannerViewModel: ObservableObject {
             scannedContact.fullName = combinedText(scannedContact.fullName, block.text)
         case .company:
             scannedContact.companyName = combinedText(scannedContact.companyName, block.text)
+        case .email:
+            scannedContact.emailAddress = combinedText(scannedContact.emailAddress, block.text)
         case let .phone(phoneIndex):
             assign(block.text, toPhoneAt: phoneIndex)
         case .notes:
@@ -178,6 +181,12 @@ final class CardScannerViewModel: ObservableObject {
 
         mutableContact.organizationName = scannedContact.companyName
         mutableContact.note = scannedContact.notes
+        let trimmedEmail = scannedContact.emailAddress.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedEmail.isEmpty {
+            mutableContact.emailAddresses = [
+                CNLabeledValue(label: CNLabelWork, value: trimmedEmail as NSString)
+            ]
+        }
 
         let phoneValues = scannedContact.phoneNumbers
             .map { parser.normalizePhone($0) }
@@ -196,6 +205,7 @@ final class CardScannerViewModel: ObservableObject {
 enum ContactDropField: Hashable {
     case fullName
     case company
+    case email
     case phone(Int)
     case notes
 }
