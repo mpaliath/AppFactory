@@ -83,17 +83,18 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychain -d user -s "$KEYCHAIN_PATH"
 
-          # Install provisioning profile
+          # Install provisioning profile using its UUID as the filename
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< "$(security cms -D -i "$PP_PATH")")
+          PP_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin <<< "$(security cms -D -i "$PP_PATH")")
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"${PP_UUID}.mobileprovision"
 
-          # Export keychain path for cleanup step
+          # Export variables for subsequent steps
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          echo "PP_UUID=$PP_UUID" >> "$GITHUB_ENV"
+          echo "PP_NAME=$PP_NAME" >> "$GITHUB_ENV"
 
       - name: Archive app
-        env:
-          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           xcodebuild \
             -project "$IOS_PROJECT_PATH" \
@@ -101,6 +102,10 @@ jobs:
             -configuration "$IOS_CONFIGURATION" \
             -sdk iphoneos \
             -archivePath "$ARCHIVE_PATH" \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE="$PP_UUID" \
+            PROVISIONING_PROFILE_SPECIFIER="$PP_NAME" \
+            DEVELOPMENT_TEAM=U4J6FD52VY \
             archive
 
       - name: Create export options
@@ -171,4 +176,6 @@ jobs:
           if [ -n "$KEYCHAIN_PATH" ] && security list-keychains | grep -q "$KEYCHAIN_PATH"; then
             security delete-keychain "$KEYCHAIN_PATH"
           fi
-          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+          if [ -n "$PP_UUID" ]; then
+            rm -f ~/Library/MobileDevice/Provisioning\ Profiles/"${PP_UUID}.mobileprovision"
+          fi
