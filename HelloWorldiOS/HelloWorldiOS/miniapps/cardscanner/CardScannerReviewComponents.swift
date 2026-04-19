@@ -7,16 +7,17 @@ struct CardScannerTokenPoolView: View {
     private let columns = [GridItem(.adaptive(minimum: 120), spacing: 8)]
 
     var body: some View {
-        Section("Scanned Words & Numbers") {
+        GroupBox("Scanned Words & Numbers") {
             if blocks.isEmpty {
                 Text("All scanned blocks are assigned.")
                     .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                     ForEach(blocks) { block in
                         DraggableBlockChip(text: block.text, id: block.id)
-                            .dropDestination(for: String.self) { items, _ in
-                                guard let sourceID = items.first.flatMap(UUID.init(uuidString:)) else {
+                            .dropDestination(for: BlockDragItem.self) { items, _ in
+                                guard let sourceID = items.first.flatMap({ UUID(uuidString: $0.blockID) }) else {
                                     return false
                                 }
                                 onMerge(sourceID, block.id)
@@ -33,7 +34,8 @@ struct CardScannerDropFormView: View {
     @ObservedObject var viewModel: CardScannerViewModel
 
     var body: some View {
-        Section("Detected Details") {
+        GroupBox("Detected Details") {
+            VStack(alignment: .leading, spacing: 12) {
             DroppableField(
                 title: "Full Name",
                 text: $viewModel.scannedContact.fullName,
@@ -83,6 +85,7 @@ struct CardScannerDropFormView: View {
                 dropField: .notes,
                 onDrop: viewModel.useBlock(_:for:)
             )
+            }
         }
     }
 }
@@ -104,8 +107,8 @@ struct DroppableField: View {
             .onChange(of: text) { _, _ in
                 onTextChange?()
             }
-            .dropDestination(for: String.self) { items, _ in
-                guard let blockID = items.first.flatMap(UUID.init(uuidString:)) else {
+            .dropDestination(for: BlockDragItem.self) { items, _ in
+                guard let blockID = items.first.flatMap({ UUID(uuidString: $0.blockID) }) else {
                     return false
                 }
                 onDrop(blockID, dropField)
@@ -121,7 +124,7 @@ struct DraggableBlockChip: View {
     var body: some View {
         chip
             .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
-            .draggable(id.uuidString) {
+            .draggable(BlockDragItem(blockID: id.uuidString)) {
                 chip
                     .fixedSize()
             }

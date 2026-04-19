@@ -7,6 +7,7 @@ import UIKit
 final class CardScannerViewModel: ObservableObject {
     @Published var scannedContact = ScannedContact()
     @Published var isShowingCamera = false
+    @Published var isShowingPhotoPicker = false
     @Published var isSaving = false
     @Published var statusMessage: String?
     @Published var capturedImage: UIImage?
