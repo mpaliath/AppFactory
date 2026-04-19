@@ -119,12 +119,20 @@ struct DraggableBlockChip: View {
     let id: UUID
 
     var body: some View {
+        chip
+            .contentShape(.dragPreview, RoundedRectangle(cornerRadius: 10))
+            .draggable(id.uuidString) {
+                chip
+                    .fixedSize()
+            }
+    }
+
+    private var chip: some View {
         Text(text)
             .font(.subheadline)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.blue.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-            .draggable(id.uuidString)
     }
 }
