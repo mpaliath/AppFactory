@@ -40,13 +40,35 @@ struct CardScannerTextParser {
     }
 
     func normalizePhone(_ text: String) -> String {
-        text
+        let stripped = text
             .unicodeScalars
             .filter { phoneAllowed.contains($0) }
             .map(String.init)
             .joined()
             .replacingOccurrences(of: ".", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return formatE164(stripped)
+    }
+
+    private func formatE164(_ phone: String) -> String {
+        var digits = phone.filter(\.isWholeNumber)
+        guard !digits.isEmpty else { return "" }
+
+        if phone.hasPrefix("+") {
+            return "+\(digits)"
+        }
+
+        // US/CA numbers: leading 1 + 10 digits, or bare 10 digits
+        if digits.count == 11 && digits.hasPrefix("1") {
+            return "+\(digits)"
+        }
+        if digits.count == 10 {
+            return "+1\(digits)"
+        }
+
+        // Other lengths: prefix with + and assume digits include country code
+        return "+\(digits)"
     }
 
     private func extractPhoneNumbers(from text: String) -> [String] {
