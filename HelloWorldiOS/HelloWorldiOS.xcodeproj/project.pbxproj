@@ -35,6 +35,7 @@
 		A1B2C4342A00000100000001 /* CardScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4352A00000100000001 /* CardScannerViewModel.swift */; };
 		A1B2C4362A00000100000001 /* CardScannerCameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */; };
 		A1B2C4382A00000100000001 /* CardScannerMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */; };
+		A1B2C43B2A00000100000001 /* CardScannerReviewComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C43C2A00000100000001 /* CardScannerReviewComponents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		A1B2C4352A00000100000001 /* CardScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerViewModel.swift; sourceTree = "<group>"; };
 		A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerCameraPicker.swift; sourceTree = "<group>"; };
 		A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerMiniAppView.swift; sourceTree = "<group>"; };
+		A1B2C43C2A00000100000001 /* CardScannerReviewComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerReviewComponents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,6 +188,7 @@
 				A1B2C4352A00000100000001 /* CardScannerViewModel.swift */,
 				A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */,
 				A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */,
+				A1B2C43C2A00000100000001 /* CardScannerReviewComponents.swift */,
 			);
 			path = cardscanner;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				A1B2C4342A00000100000001 /* CardScannerViewModel.swift in Sources */,
 				A1B2C4362A00000100000001 /* CardScannerCameraPicker.swift in Sources */,
 				A1B2C4382A00000100000001 /* CardScannerMiniAppView.swift in Sources */,
+				A1B2C43B2A00000100000001 /* CardScannerReviewComponents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
