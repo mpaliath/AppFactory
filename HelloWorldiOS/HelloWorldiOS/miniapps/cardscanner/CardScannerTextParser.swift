@@ -96,7 +96,7 @@ struct CardScannerTextParser {
                     .split(separator: ",")
                     .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                     .filter { !$0.isEmpty }
-                    .map { ScannedTextBlock(text: $0) }
+                    .map { ScannedTextBlock(text: $0.capitalized) }
             }
     }
 

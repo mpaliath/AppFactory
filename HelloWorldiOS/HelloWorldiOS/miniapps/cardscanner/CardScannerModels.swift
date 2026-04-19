@@ -1,4 +1,5 @@
 import Foundation
+import CoreTransferable
 
 struct ScannedContact {
     var fullName: String = ""
@@ -20,6 +21,20 @@ struct ScannedTextBlock: Identifiable, Equatable {
         self.id = id
         self.text = text
     }
+}
+
+struct BlockDragItem: Codable, Transferable {
+    let blockID: String
+
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .blockDragItem)
+    }
+}
+
+import UniformTypeIdentifiers
+
+extension UTType {
+    static let blockDragItem = UTType(exportedAs: "com.appfactory.cardscanner.blockdragitem")
 }
 
 struct ParsedCardScan {
