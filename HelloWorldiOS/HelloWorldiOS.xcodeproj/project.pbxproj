@@ -36,6 +36,10 @@
 		A1B2C4362A00000100000001 /* CardScannerCameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */; };
 		A1B2C4382A00000100000001 /* CardScannerMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */; };
 		A1B2C43B2A00000100000001 /* CardScannerReviewComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C43C2A00000100000001 /* CardScannerReviewComponents.swift */; };
+		A1B2C4402A00000100000001 /* WhiteboardStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4412A00000100000001 /* WhiteboardStroke.swift */; };
+		A1B2C4422A00000100000001 /* WhiteboardDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4432A00000100000001 /* WhiteboardDrawingView.swift */; };
+		A1B2C4442A00000100000001 /* InfiniteWhiteboardCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4452A00000100000001 /* InfiniteWhiteboardCanvas.swift */; };
+		A1B2C4462A00000100000001 /* InfiniteWhiteboardMiniAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C4472A00000100000001 /* InfiniteWhiteboardMiniAppView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +74,10 @@
 		A1B2C4372A00000100000001 /* CardScannerCameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerCameraPicker.swift; sourceTree = "<group>"; };
 		A1B2C4392A00000100000001 /* CardScannerMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerMiniAppView.swift; sourceTree = "<group>"; };
 		A1B2C43C2A00000100000001 /* CardScannerReviewComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScannerReviewComponents.swift; sourceTree = "<group>"; };
+		A1B2C4412A00000100000001 /* WhiteboardStroke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhiteboardStroke.swift; sourceTree = "<group>"; };
+		A1B2C4432A00000100000001 /* WhiteboardDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhiteboardDrawingView.swift; sourceTree = "<group>"; };
+		A1B2C4452A00000100000001 /* InfiniteWhiteboardCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteWhiteboardCanvas.swift; sourceTree = "<group>"; };
+		A1B2C4472A00000100000001 /* InfiniteWhiteboardMiniAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteWhiteboardMiniAppView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +140,7 @@
 				A1B2C4282A00000100000001 /* poker */,
 				A1B2C41A2A00000100000001 /* timeaudit */,
 				A1B2C43A2A00000100000001 /* cardscanner */,
+				A1B2C4482A00000100000001 /* whiteboard */,
 			);
 			path = miniapps;
 			sourceTree = "<group>";
@@ -191,6 +200,17 @@
 				A1B2C43C2A00000100000001 /* CardScannerReviewComponents.swift */,
 			);
 			path = cardscanner;
+			sourceTree = "<group>";
+		};
+		A1B2C4482A00000100000001 /* whiteboard */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C4412A00000100000001 /* WhiteboardStroke.swift */,
+				A1B2C4432A00000100000001 /* WhiteboardDrawingView.swift */,
+				A1B2C4452A00000100000001 /* InfiniteWhiteboardCanvas.swift */,
+				A1B2C4472A00000100000001 /* InfiniteWhiteboardMiniAppView.swift */,
+			);
+			path = whiteboard;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,6 +310,10 @@
 				A1B2C4362A00000100000001 /* CardScannerCameraPicker.swift in Sources */,
 				A1B2C4382A00000100000001 /* CardScannerMiniAppView.swift in Sources */,
 				A1B2C43B2A00000100000001 /* CardScannerReviewComponents.swift in Sources */,
+				A1B2C4402A00000100000001 /* WhiteboardStroke.swift in Sources */,
+				A1B2C4422A00000100000001 /* WhiteboardDrawingView.swift in Sources */,
+				A1B2C4442A00000100000001 /* InfiniteWhiteboardCanvas.swift in Sources */,
+				A1B2C4462A00000100000001 /* InfiniteWhiteboardMiniAppView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

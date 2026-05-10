@@ -46,6 +46,8 @@ private struct MiniAppDestinationView: View {
             PokerMiniAppView()
         case "cardscanner":
             CardScannerMiniAppView()
+        case "whiteboard":
+            InfiniteWhiteboardMiniAppView()
         default:
             Text("Mini app unavailable.")
         }

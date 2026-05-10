@@ -26,6 +26,11 @@ enum MiniAppRegistry {
             id: "cardscanner",
             name: "Card Scanner",
             description: "Scan a business card and save it as a contact."
+        ),
+        MiniApp(
+            id: "whiteboard",
+            name: "Infinite Whiteboard",
+            description: "Sketch, zoom, pan, and change ink color with a long press."
         )
     ]
 }
