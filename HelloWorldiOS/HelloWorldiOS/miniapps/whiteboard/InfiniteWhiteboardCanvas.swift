@@ -13,6 +13,8 @@ struct InfiniteWhiteboardCanvas: UIViewRepresentable {
         scrollView.minimumZoomScale = 0.25
         scrollView.maximumZoomScale = 5
         scrollView.bouncesZoom = true
+        scrollView.delaysContentTouches = false
+        scrollView.canCancelContentTouches = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.panGestureRecognizer.minimumNumberOfTouches = 2

@@ -7,6 +7,7 @@ final class WhiteboardDrawingView: UIView {
     private var strokes: [WhiteboardStroke] = []
     private var activeStroke: WhiteboardStroke?
     private let baseLineWidth: CGFloat = 5
+    private let gestureDelegate = WhiteboardDrawingGestureDelegate()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,10 +64,14 @@ final class WhiteboardDrawingView: UIView {
         let drawPan = UIPanGestureRecognizer(target: self, action: #selector(handleDrawPan(_:)))
         drawPan.minimumNumberOfTouches = 1
         drawPan.maximumNumberOfTouches = 1
+        drawPan.cancelsTouchesInView = false
+        drawPan.delegate = gestureDelegate
         addGestureRecognizer(drawPan)
 
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
         longPress.minimumPressDuration = 0.45
+        longPress.cancelsTouchesInView = false
+        longPress.delegate = gestureDelegate
         addGestureRecognizer(longPress)
     }
 
@@ -129,5 +134,18 @@ final class WhiteboardDrawingView: UIView {
     @objc private func handleLongPress(_ recognizer: UILongPressGestureRecognizer) {
         guard recognizer.state == .began else { return }
         onLongPress?()
+    }
+}
+
+private final class WhiteboardDrawingGestureDelegate: NSObject, UIGestureRecognizerDelegate {
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        otherGestureRecognizer.view is UIScrollView
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        touch.type == .direct || touch.type == .pencil
     }
 }
