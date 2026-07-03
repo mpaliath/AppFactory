@@ -34,6 +34,27 @@ final class WhiteboardDrawingView: UIView {
         setNeedsDisplay()
     }
 
+    func translateDrawing(by offset: CGPoint) {
+        guard offset != .zero else { return }
+
+        strokes = strokes.map { stroke in
+            var translatedStroke = stroke
+            translatedStroke.points = stroke.points.map { point in
+                CGPoint(x: point.x + offset.x, y: point.y + offset.y)
+            }
+            return translatedStroke
+        }
+
+        if var activeStroke {
+            activeStroke.points = activeStroke.points.map { point in
+                CGPoint(x: point.x + offset.x, y: point.y + offset.y)
+            }
+            self.activeStroke = activeStroke
+        }
+
+        setNeedsDisplay()
+    }
+
     private func configureView() {
         backgroundColor = .white
         isOpaque = true

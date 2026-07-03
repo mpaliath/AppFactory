@@ -48,8 +48,8 @@ struct InfiniteWhiteboardCanvas: UIViewRepresentable {
     private func centerCanvasIfNeeded(in scrollView: UIScrollView, coordinator: Coordinator) {
         guard !coordinator.didSetInitialOffset, scrollView.bounds.size != .zero else { return }
 
-        let scaledWidth = coordinator.canvasSize.width * scrollView.zoomScale
-        let scaledHeight = coordinator.canvasSize.height * scrollView.zoomScale
+        let scaledWidth = coordinator.contentSize.width * scrollView.zoomScale
+        let scaledHeight = coordinator.contentSize.height * scrollView.zoomScale
         let x = max((scaledWidth - scrollView.bounds.width) / 2, 0)
         let y = max((scaledHeight - scrollView.bounds.height) / 2, 0)
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
@@ -57,12 +57,73 @@ struct InfiniteWhiteboardCanvas: UIViewRepresentable {
     }
 
     final class Coordinator: NSObject, UIScrollViewDelegate {
-        let canvasSize = CGSize(width: 12_000, height: 12_000)
+        private static let initialCanvasSize = CGSize(width: 12_000, height: 12_000)
+        private let edgeExpansionThreshold: CGFloat = 1_500
+        private let expansionAmount: CGFloat = 6_000
+
         weak var drawingView: WhiteboardDrawingView?
         var didSetInitialOffset = false
+        var contentSize: CGSize
+
+        var canvasSize: CGSize {
+            contentSize
+        }
+
+        override init() {
+            contentSize = Self.initialCanvasSize
+            super.init()
+        }
 
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
             drawingView
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            expandCanvasIfNeeded(in: scrollView)
+        }
+
+        func scrollViewDidZoom(_ scrollView: UIScrollView) {
+            expandCanvasIfNeeded(in: scrollView)
+        }
+
+        private func expandCanvasIfNeeded(in scrollView: UIScrollView) {
+            guard let drawingView else { return }
+
+            var originOffset = CGPoint.zero
+            var newSize = contentSize
+            var newContentOffset = scrollView.contentOffset
+            let visibleSize = scrollView.bounds.size
+            let zoomScale = max(scrollView.zoomScale, 0.001)
+            let threshold = edgeExpansionThreshold * zoomScale
+            let expansion = expansionAmount * zoomScale
+
+            if newContentOffset.x < threshold {
+                newSize.width += expansionAmount
+                originOffset.x += expansionAmount
+                newContentOffset.x += expansion
+            }
+
+            if newContentOffset.y < threshold {
+                newSize.height += expansionAmount
+                originOffset.y += expansionAmount
+                newContentOffset.y += expansion
+            }
+
+            if newContentOffset.x + visibleSize.width > (contentSize.width * zoomScale) - threshold {
+                newSize.width += expansionAmount
+            }
+
+            if newContentOffset.y + visibleSize.height > (contentSize.height * zoomScale) - threshold {
+                newSize.height += expansionAmount
+            }
+
+            guard newSize != contentSize else { return }
+
+            contentSize = newSize
+            scrollView.contentSize = newSize
+            drawingView.frame = CGRect(origin: .zero, size: newSize)
+            drawingView.translateDrawing(by: originOffset)
+            scrollView.contentOffset = newContentOffset
         }
     }
 }
